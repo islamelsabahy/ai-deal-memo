@@ -1,0 +1,3 @@
+Vendored engines (copied unchanged, do not edit here):
+- landlab.js  from islamelsabahy/land-deal-lab@13ee23c docs/landlab.js
+- payplans.js from islamelsabahy/egypt-payment-plans@7bb6cd8 docs/payplans.js

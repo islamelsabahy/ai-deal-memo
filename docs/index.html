@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Deal Memo · مذكرة صفقة الأرض</title>
+<link rel="stylesheet" href="app/style.css">
+<style>.verdict{font-size:30px;font-weight:800;padding:14px 18px;border-radius:10px;border:2px solid currentColor;display:inline-block}
+.v-go{color:var(--grn)}.v-negotiate{color:var(--amb)}.v-walk{color:var(--red)}
+.hl{border-color:var(--gold)!important;box-shadow:0 0 0 1px var(--gold)}
+.range{position:relative;height:16px;background:#0c0e12;border-radius:8px;margin:28px 0 30px}.range i{position:absolute;top:0;height:100%;background:rgba(95,191,143,.35);border-radius:8px}
+.mk{position:absolute;top:-20px;font-size:11px;color:var(--mu);transform:translateX(-50%);white-space:nowrap}.mk:after{content:"";position:absolute;left:50%;top:18px;width:2px;height:20px;background:currentColor}
+.memo{background:#0c0e12;border:1px solid var(--line);border-radius:8px;padding:12px;font-size:14px}
+a.btn{display:inline-block;background:none;color:var(--gold);border:1px solid var(--gold);border-radius:6px;padding:7px 12px;text-decoration:none}</style>
+</head>
+<body>
+<header>
+  <div><h1 id="t_title"></h1><p class="sub" id="t_sub"></p></div>
+  <div class="row noprint"><button class="g" id="lang"></button><button class="g" id="csv"></button><button class="g" id="prn"></button></div>
+</header>
+<main>
+  <section class="card noprint">
+    <h2 id="t_s1"></h2>
+    <textarea id="offer"></textarea>
+    <div class="row" style="margin-top:8px"><button class="b" id="extract"></button><button class="g" id="sample"></button><span class="note" id="exmsg"></span></div>
+  </section>
+  <section class="card">
+    <h2 id="t_s2"></h2>
+    <div class="row" id="form"></div>
+  </section>
+  <section class="card">
+    <h2 id="t_s3"></h2>
+    <div class="row" style="align-items:center;gap:20px"><div id="verdict"></div><div class="kpis" id="kpis" style="flex:1"></div></div>
+    <h3 id="t_range"></h3><div class="range" id="range" dir="ltr"></div>
+    <div class="row noprint"><a class="btn" id="tosurv" target="_blank" rel="noopener"></a><a class="btn" href="https://islamelsabahy.github.io/land-deal-lab/" target="_blank" rel="noopener" id="toldl"></a></div>
+  </section>
+  <div class="grid2">
+    <section class="card"><h2 id="t_struct"></h2><div class="tw"><table id="struct"></table></div><p class="note" id="t_structn"></p></section>
+    <section class="card"><h2 id="t_risk"></h2><div class="tw"><table id="risk"></table></div></section>
+  </div>
+  <section class="card"><h2 id="t_flags"></h2><ul class="tight" id="flags"></ul></section>
+  <section class="card"><h2 id="t_memo"></h2><div class="memo" id="memo"></div><div class="row noprint" style="margin-top:8px"><button class="g" id="copy"></button></div></section>
+  <section class="card noprint" id="ai"></section>
+  <p class="note" id="t_disc" style="text-align:center"></p>
+</main>
+<footer>Islam El-Sherbiny · <a href="https://github.com/islamelsabahy/ai-deal-memo">GitHub</a> · <a href="https://github.com/islamelsabahy/land-deal-lab">Land Deal Lab</a> · <a href="https://github.com/islamelsabahy/egypt-payment-plans">Egypt Payment Plans</a></footer>
+<script src="app/kit.js"></script><script src="app/ai.js"></script><script src="app/vendor/landlab.js"></script><script src="app/vendor/payplans.js"></script><script src="app/dealmemo.js"></script>
+<script>
+"use strict";
+var T={ar:{title:"مذكرة صفقة الأرض",sub:"الصق عرض الأرض زي ما وصلك، وخد قرار: ادخل، فاوض، أو انسحب، بالأرقام ونطاق التفاوض وعلامات التحذير.",s1:"1 · الصق العرض",s2:"2 · راجع الافتراضات",s3:"3 · القرار",extract:"استخرج البيانات",sample:"عرض تجريبي",exfound:"اتعرف على: ",exnone:"ما لقيتش أرقام واضحة، دخّلها يدوي تحت.",
+ range:"نطاق التفاوض (مليون جنيه)",struct:"طريقة دفع الأرض",structn:"التقسيط بيرفع أقصى سعر تقدر تدفعه لأن الفلوس بتطلع متأخر.",risk:"اختبار الضغط وأهم العوامل",flags:"علامات التحذير",memo:"المذكرة",copy:"نسخ المذكرة",copied:"اتنسخت ✓",disc:"تحليل استرشادي مبني على الافتراضات المدخلة. مش نصيحة استثمارية.",
+ csv:"تصدير CSV",prn:"طباعة / PDF",tosurv:"اختبر الكاش في Cashflow Survival ←",toldl:"تحليل أعمق في Land Deal Lab ←",
+ ask:"السعر المطلوب",max:"أقصى سعر للأرض",head:"الفرق",margin:"الهامش بالسعر المطلوب",irr:"العائد الداخلي",open:"افتح بـ",walk:"انسحب فوق",structure:"الهيكل",maxbid:"أقصى سعر",perm:"للمتر",item:"البند",value:"القيمة",stress:"بيع -15% وتكلفة +20%: الهامش",planhc:"الخصم المخفي في خطة العملاء",driver:"عامل مؤثر (±20%)",none:"لا توجد",
+ v:{go:"ادخل",negotiate:"فاوض",walk:"انسحب"},
+ opt:{cash:"كاش",installments:"تقسيط"},
+ F:{land_area:["مساحة الأرض","م²","المساحة بالمتر المربع. الفدان = 4,200.83 م²."],asking_price:["السعر المطلوب","مليون ج.م","إجمالي السعر اللي البايع طالبه."],land_mode:["طريقة دفع الأرض","","كاش أو تقسيط. التقسيط بيقلل القيمة الحالية لسعر الأرض."],land_down:["مقدم الأرض","%","نسبة المقدم لو تقسيط."],land_years:["سنين تقسيط الأرض","سنة","مدة تقسيط الأرض."],far:["معامل البناء (FAR)","×","المسطح المبني ÷ مساحة الأرض."],efficiency:["نسبة البيع من المبني","%","المساحة القابلة للبيع ÷ المسطح المبني."],price_sqm:["سعر بيع المتر اليوم","ج.م/م²","متوسط سعر بيع متر الوحدة النهارده."],cost_sqm:["تكلفة إنشاء المتر","ج.م/م²","تكلفة البناء والتشطيب للمتر المبني."],target_margin:["الهامش المستهدف","%","الربح المطلوب من الإيرادات بعد خصمها."],discount:["معدل الخصم","% سنويًا","تكلفة الفلوس أو العائد البديل."],price_growth:["زيادة أسعار البيع","% سنويًا","الزيادة السنوية المتوقعة في سعر البيع."],cost_infl:["تضخم التكلفة","% سنويًا","الزيادة السنوية المتوقعة في تكلفة الإنشاء."],build:["مدة الإنشاء","شهر","من بدء التنفيذ للتسليم."],sales_months:["مدة البيع","شهر","المدة اللي هتبيع فيها كل الوحدات."],plan_down:["مقدم العملاء","%","مقدم خطة السداد للمشترين."],plan_months:["مدة تقسيط العملاء","شهر","عدد شهور تقسيط المشترين."]}},
+ en:{title:"AI Deal Memo",sub:"Paste a land offer as you received it and get a decision: go, negotiate or walk away, with the numbers, a negotiation range and red flags.",s1:"1 · Paste the offer",s2:"2 · Check the assumptions",s3:"3 · Decision",extract:"Extract terms",sample:"Sample offer",exfound:"Recognised: ",exnone:"No clear figures found; enter them below.",
+ range:"Negotiation range (EGP millions)",struct:"Land payment structure",structn:"Instalments raise the most you can pay because the money leaves later.",risk:"Stress test and key drivers",flags:"Red flags",memo:"Memo",copy:"Copy memo",copied:"Copied ✓",disc:"Indicative analysis based on the inputs. Not investment advice.",
+ csv:"Export CSV",prn:"Print / PDF",tosurv:"Stress the cash in Cashflow Survival →",toldl:"Deeper analysis in Land Deal Lab →",
+ ask:"Asking price",max:"Max land price",head:"Headroom",margin:"Margin at ask",irr:"IRR",open:"Open at",walk:"Walk away above",structure:"Structure",maxbid:"Max price",perm:"per m²",item:"Item",value:"Value",stress:"Prices -15% and costs +20%: margin",planhc:"Hidden discount in buyer plan",driver:"Key driver (±20%)",none:"None",
+ v:{go:"Go",negotiate:"Negotiate",walk:"Walk away"},
+ opt:{cash:"Cash",installments:"Instalments"},
+ F:{land_area:["Land area","m²","Area in square metres. 1 feddan = 4,200.83 m²."],asking_price:["Asking price","EGP M","Total price the seller asks."],land_mode:["Land payment","","Cash or instalments. Instalments lower the present value of the land price."],land_down:["Land down payment","%","Down payment if instalments."],land_years:["Land instalment years","years","Instalment period for the land."],far:["FAR","×","Built-up area ÷ land area."],efficiency:["Sellable efficiency","%","Sellable area ÷ built-up area."],price_sqm:["Selling price today","EGP/m²","Average unit selling price per m² today."],cost_sqm:["Construction cost","EGP/m²","Build and finish cost per built m²."],target_margin:["Target margin","%","Required profit as a share of discounted revenue."],discount:["Discount rate","% / year","Cost of money or alternative return."],price_growth:["Price growth","% / year","Expected annual growth in selling prices."],cost_infl:["Cost inflation","% / year","Expected annual growth in construction cost."],build:["Build duration","months","From construction start to handover."],sales_months:["Sales period","months","Months to sell all units."],plan_down:["Buyer down payment","%","Down payment in the buyer plan."],plan_months:["Buyer instalment term","months","Months of buyer instalments."]}}};
+var PCT={land_down:1,efficiency:1,target_margin:1,discount:1,price_growth:1,cost_infl:1,plan_down:1},MIL={asking_price:1};
+var ORDER=["land_area","asking_price","land_mode","land_down","land_years","far","efficiency","price_sqm","cost_sqm","target_margin","discount","price_growth","cost_infl","build","sales_months","plan_down","plan_months"];
+var SAMPLE={ar:"عرض أرض سكني في القاهرة الجديدة: مساحة ٥ فدان، السعر المطلوب ٣٢٠ مليون جنيه، مقدم 20% والباقي تقسيط على 3 سنين. معامل البناء 1.2. سعر البيع في المنطقة حوالي 68 ألف للمتر، وتكلفة البناء تقريبًا 16 ألف للمتر.",
+ en:"Residential plot in New Cairo: 5 feddans, asking price 320 million EGP, 20% down and the rest in installments over 3 years. FAR 1.2. Selling price in the area about 68k per m2, construction cost roughly 16k per m2."};
+var $=function(i){return document.getElementById(i)},t=function(k){return T[Kit.lang][k]};
+var P={};for(var k in LandLab.DEFAULTS)P[k]=LandLab.DEFAULTS[k];P.asking_price=320e6;P.land_area=5*DealMemo.FEDDAN;P.land_mode="installments";
+var HL={},R=null,MEMO="";
+function md(src){var out=[],ul=false;src.split("\n").forEach(function(l){var h=Kit.esc(l).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");if(/^- /.test(l)){if(!ul){out.push("<ul class=\"tight\">");ul=true}out.push("<li>"+h.slice(2)+"</li>");return}if(ul){out.push("</ul>");ul=false}if(/^# /.test(l))out.push("<h3>"+h.slice(2)+"</h3>");else if(/^_.*_$/.test(l))out.push("<p class=\"note\">"+h.slice(1,-1)+"</p>");else if(l)out.push("<p>"+h+"</p>")});if(ul)out.push("</ul>");return out.join("")}
+function shown(k){var v=P[k];return PCT[k]?+(v*100).toFixed(2):MIL[k]?+(v/1e6).toFixed(2):k==="land_area"?Math.round(v):v}
+function form(){$("form").innerHTML=ORDER.map(function(k){var f=t("F")[k],inst=P.land_mode==="installments";
+ if((k==="land_down"||k==="land_years")&&!inst)return "";
+ var ctl=k==="land_mode"?'<select data-k="land_mode"><option value="cash"'+(P.land_mode==="cash"?" selected":"")+'>'+t("opt").cash+'</option><option value="installments"'+(inst?" selected":"")+'>'+t("opt").installments+'</option></select>'
+  :'<input type="number" step="any" min="0" data-k="'+k+'" value="'+shown(k)+'"'+(HL[k]?' class="hl"':'')+'>';
+ return '<div class="f"><label>'+f[0]+' '+Kit.q(f[2])+'</label>'+ctl+'<span class="u">'+f[1]+(k==="land_area"?' · '+(P.land_area/DealMemo.FEDDAN).toFixed(2)+(Kit.lang==="ar"?" فدان":" feddan"):"")+'</span></div>'}).join("")}
+function M(x){return x===null||x===undefined?"—":Kit.fmt(x/1e6,1)}
+function pc(x){return x===null||x===undefined?"—":(x*100).toFixed(1)+"%"}
+function calc(){
+ try{R=DealMemo.evaluate(P)}catch(e){$("verdict").innerHTML='<span class="bad">'+Kit.esc(e.message)+'</span>';return}
+ var a=R.analysis;
+ $("verdict").innerHTML='<span class="verdict v-'+R.verdict+'">'+t("v")[R.verdict]+'</span>';
+ $("kpis").innerHTML=[[t("ask"),M(P.asking_price)],[t("max"),M(a.max_bid)],[t("head"),M(a.max_bid-P.asking_price)],[t("margin"),pc(a.margin_at_ask)],[t("irr"),pc(a.irr_annual)]].map(function(x){return '<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>'}).join("");
+ var hi=Math.max(P.asking_price,a.max_bid)*1.15,pos=function(v){return Math.max(0,Math.min(100,v/hi*100))},side="left";
+ $("range").innerHTML='<i style="'+side+':'+pos(R.opening_offer)+'%;width:'+Math.max(0,pos(R.walk_away)-pos(R.opening_offer))+'%"></i>'+[[R.opening_offer,t("open"),"var(--grn)"],[R.walk_away,t("walk"),"var(--red)"],[P.asking_price,t("ask"),"var(--gold)"]].map(function(m,i){return '<span class="mk" style="'+side+':'+pos(m[0])+'%;color:'+m[2]+';'+(i===2?"top:20px":"")+'">'+m[1]+' '+M(m[0])+'</span>'}).join("");
+ $("struct").innerHTML='<tr><th class="n">'+t("structure")+'</th><th>'+t("maxbid")+'</th><th>'+t("perm")+'</th></tr>'+R.structures.map(function(s){return '<tr><td class="w">'+DealMemo.W[Kit.lang].structs[s.id]+'</td><td class="'+(s.max_bid>=P.asking_price?"ok":"bad")+'">'+M(s.max_bid)+'</td><td>'+Kit.fmt(s.max_bid_per_m2)+'</td></tr>'}).join("");
+ $("risk").innerHTML='<tr><th class="n">'+t("item")+'</th><th>'+t("value")+'</th></tr><tr><td class="w">'+t("stress")+'</td><td class="'+(R.stress.margin_at_ask<0?"bad":"ok")+'">'+pc(R.stress.margin_at_ask)+'</td></tr><tr><td class="w">'+t("planhc")+'</td><td>'+pc(R.plan_haircut)+'</td></tr>'+R.tornado.map(function(x){return '<tr><td class="w">'+t("driver")+': '+DealMemo.W[Kit.lang].drivers[x.driver]+'</td><td><bdi dir="ltr">'+Kit.fmt(x.bid_low)+' – '+Kit.fmt(x.bid_high)+'</bdi> '+(Kit.lang==="ar"?"ج.م/م²":"EGP/m²")+'</td></tr>'}).join("");
+ $("flags").innerHTML=R.flags.length?R.flags.map(function(f){return '<li class="warn">'+DealMemo.W[Kit.lang].flags[f]+'</li>'}).join(""):'<li class="ok">'+t("none")+'</li>';
+ MEMO=DealMemo.memo(R,Kit.lang);$("memo").innerHTML=md(MEMO);
+ var price=P.asking_price>0?P.asking_price:a.max_bid,up=P.land_mode==="cash"?price:price*P.land_down,UA=150,units=Math.max(1,Math.round(a.sellable/UA));
+ var q={from:"ldl",price_m2:Math.round(P.price_sqm),area:UA,units:units,budget:+(a.bua*P.cost_sqm*(1+P.soft_pct+P.contingency_pct)/1e6).toFixed(1),months:Math.min(120,P.start_delay+P.build),down:+(P.plan_down*100).toFixed(2),term:P.plan_months,overhead:+(P.overhead_m/1e6).toFixed(2),velocity:+(units/P.sales_months).toFixed(2),land:+(up/1e6).toFixed(1),growth:+(P.price_growth*100).toFixed(2),infl:+(P.cost_infl/12).toFixed(4)};
+ $("tosurv").href="https://islamelsabahy.github.io/developer-cashflow-survival/?"+Object.keys(q).map(function(k){return k+"="+encodeURIComponent(q[k])}).join("&");
+}
+function render(){Kit.setLang(Kit.lang);["title","sub","s1","s2","s3","extract","sample","range","struct","structn","risk","flags","memo","copy","disc","csv","prn","tosurv","toldl"].forEach(function(k){var e=$("t_"+k)||$(k);if(e)e.textContent=t(k)});
+ $("lang").textContent=Kit.lang==="ar"?"EN":"ع";if(!$("offer").value)$("offer").placeholder=SAMPLE[Kit.lang];form();calc();AI.render()}
+document.addEventListener("input",function(e){var k=e.target.dataset&&e.target.dataset.k;if(!k||k==="land_mode")return;var v=+e.target.value;if(!(v===v))return;
+ P[k]=PCT[k]?v/100:MIL[k]?v*1e6:v;delete HL[k];e.target.classList.remove("hl");if(k==="land_area"){var u=e.target.parentNode.querySelector(".u");u.textContent=t("F").land_area[1]+" · "+(P.land_area/DealMemo.FEDDAN).toFixed(2)+(Kit.lang==="ar"?" فدان":" feddan")}calc()});
+document.addEventListener("change",function(e){if(e.target.dataset&&e.target.dataset.k==="land_mode"){P.land_mode=e.target.value;form();calc()}});
+$("extract").onclick=function(){var x=DealMemo.extract($("offer").value||$("offer").placeholder),f=x.fields;HL={};
+ for(var k in f){P[k]=f[k];HL[k]=1}
+ $("exmsg").textContent=x.found.length?t("exfound")+x.found.map(function(k){return t("F")[k][0]}).join("، "):t("exnone");form();calc()};
+$("sample").onclick=function(){$("offer").value=SAMPLE[Kit.lang];$("extract").click()};
+$("copy").onclick=function(){var b=this;try{navigator.clipboard.writeText(MEMO).then(function(){b.textContent=t("copied");setTimeout(function(){b.textContent=t("copy")},1500)})}catch(e){}};
+$("lang").onclick=function(){Kit.lang=Kit.lang==="ar"?"en":"ar";render()};$("prn").onclick=function(){print()};
+$("csv").onclick=function(){var a=R.analysis,rows=[["item","value"],["verdict",R.verdict],["asking_price_egp",P.asking_price],["max_bid_egp",Math.round(a.max_bid)],["margin_at_ask",a.margin_at_ask],["irr_annual",a.irr_annual],["opening_offer_egp",Math.round(R.opening_offer)],["walk_away_egp",Math.round(R.walk_away)],["stress_margin",R.stress.margin_at_ask],["plan_hidden_discount",R.plan_haircut]];R.structures.forEach(function(s){rows.push(["max_bid_"+s.id,Math.round(s.max_bid)])});R.flags.forEach(function(f){rows.push(["flag",f])});ORDER.forEach(function(k){rows.push(["input_"+k,P[k]])});Kit.csv(rows,"deal-memo.csv")};
+var AI=AIPanel.mount($("ai"),{lang:function(){return Kit.lang},system:"You are an investment analyst writing a memo for an Egyptian real-estate investor or developer owner.",prompt:function(){return "Original offer text:\n"+($("offer").value||"(not provided)")+"\n\nDeterministic analysis:\n"+DealMemo.memo(R,"en")+"\n\nRewrite this as an investor-ready one-page memo: decision first, then the 3 numbers that matter, the negotiation script (what to ask the seller for: price, payment terms, conditions), the top risks with mitigations, and the questions to verify before signing (title, zoning, utilities, permits)."}});
+Kit.initTips();render();
+</script>
+</body>
+</html>
