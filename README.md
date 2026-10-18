@@ -30,3 +30,8 @@ Nothing you paste is uploaded: it all runs in your browser.
 The extractor is rule-based and only fills what it can recognise, so always check the highlighted fields. The verdict is only as good as the selling price, cost and timing assumptions. Not investment advice: title, zoning, utilities and permits still need checking.
 
 Author: Islam El-Sherbiny · MIT License
+
+## Limitations
+- Demonstration tool built on **fictional sample data**. Outputs are decision support, not legal, tax or investment advice.
+- Results depend on the assumptions you enter; check them against your own numbers before relying on them.
+- Browser-only: nothing is sent to a server by this tool. See [SECURITY.md](SECURITY.md).
