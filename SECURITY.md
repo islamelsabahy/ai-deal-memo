@@ -2,7 +2,7 @@
 
 ## Scope
 `ai-deal-memo` is a static, browser-only tool. It has no server and stores no data. Inputs stay in the browser tab.
-If an optional AI layer exists, the user pastes their own API key; it is kept in memory only and never written to storage.
+If an optional AI layer exists, the user pastes their own API key (kept in memory only, never written to storage). Enabling it sends the entered text and computed results to `api.anthropic.com`; leave it off for confidential data.
 
 ## Reporting a vulnerability
 Please open a private report through GitHub: **Security → Report a vulnerability**.
