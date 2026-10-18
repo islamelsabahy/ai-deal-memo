@@ -1,0 +1,12 @@
+---
+name: Feature request
+about: Suggest an improvement for Egyptian real estate / business use
+labels: enhancement
+---
+**Problem you want solved**
+
+**Suggested behaviour**
+
+**Egypt-specific rule involved, if any** (payment plans, FX, cheques, PDPL, etc.)
+
+Please use fictional data only. Do not post real project, contract, financial or customer details in a public issue.

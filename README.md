@@ -30,3 +30,8 @@ Nothing you paste is uploaded: it all runs in your browser.
 The extractor is rule-based and only fills what it can recognise, so always check the highlighted fields. The verdict is only as good as the selling price, cost and timing assumptions. Not investment advice: title, zoning, utilities and permits still need checking.
 
 Author: Islam El-Sherbiny · MIT License
+
+## Limitations
+- Demonstration tool built on **fictional sample data**. Outputs are decision support, not legal, tax or investment advice.
+- Results depend on the assumptions you enter; check them against your own numbers before relying on them.
+- Local by default: calculations run in your browser and nothing is sent to a server. Where a page offers an **optional AI mode**, turning it on sends the text/data you entered (and the computed results it needs) to `api.anthropic.com` using your own API key. Do not enable it with confidential customer, inventory or finance data. See [SECURITY.md](SECURITY.md).
